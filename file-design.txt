@@ -1,0 +1,66 @@
+/
+├── public/
+│   ├── assets/
+│   │   ├── images/
+│   │   └── icons/
+│   └── favicon.ico
+├── app/                      # Next.js App Router
+│   ├── layout.tsx            # Ana layout
+│   ├── page.tsx              # Ana sayfa (Home)
+│   ├── connect/              # Cüzdan bağlantı sayfası
+│   │   └── page.tsx
+│   ├── auth/                 # Kimlik doğrulama sayfası
+│   │   └── page.tsx
+│   ├── dashboard/            # Kontrat etkileşim sayfası
+│   │   ├── page.tsx
+│   │   └── layout.tsx        # Dashboard layout (korumalı alan)
+│   ├── api/                  # API Routes (Sunucu Tarafı)
+│   │   ├── auth/
+│   │   │   ├── nonce/
+│   │   │   │   └── route.ts
+│   │   │   └── verify/
+│   │   │       └── route.ts
+│   │   └── contracts/
+│   │       └── route.ts
+├── components/               # Bileşenler (src dışında artık burada)
+│   ├── ui/                   # UI bileşenleri
+│   │   ├── connect-button.tsx
+│   │   ├── contract-form.tsx
+│   │   ├── auth-form.tsx
+│   │   ├── wallet-info.tsx
+│   │   └── contract-selector.tsx
+│   ├── layout/               # Layout bileşenleri
+│   │   ├── header.tsx
+│   │   ├── footer.tsx
+│   │   └── sidebar.tsx
+│   └── providers/            # Provider bileşenleri
+│       └── web3-provider.tsx
+├── store/                    # Zustand store'ları
+│   ├── web3Store.ts          # Ana Web3 store
+│   ├── authStore.ts          # Kimlik doğrulama store
+│   └── contractStore.ts      # Kontrat etkileşimleri store
+├── contracts/                # Kontrat tanımlamaları
+│   ├── index.ts              # Tüm kontratları dışa aktarır
+│   ├── messageContract.ts    # Mesaj kontratı
+│   └── otherContract.ts      # Diğer kontratlar
+├── hooks/                    # Custom hooks
+│   ├── useAutoConnect.ts
+│   ├── useAuth.ts
+│   └── useContractInteraction.ts
+├── lib/                      # Yardımcı fonksiyonlar ve yapılandırmalar
+│   ├── viem-client.ts        # Viem client yapılandırması
+│   ├── auth-utils.ts         # Kimlik doğrulama yardımcıları
+│   └── constants.ts          # Sabitler
+├── types/                    # Tip tanımlamaları
+│   ├── index.ts
+│   ├── contracts.ts
+│   └── auth.ts
+├── utils/                    # Genel yardımcı fonksiyonlar
+│   ├── format.ts
+│   └── validation.ts
+├── .env.local                # Ortam değişkenleri
+├── .gitignore
+├── next.config.js
+├── package.json
+├── tsconfig.json
+└── README.md
