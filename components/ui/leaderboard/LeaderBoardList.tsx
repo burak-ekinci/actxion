@@ -1,68 +1,45 @@
 const people = [
   {
     rank: 1,
-    name: "Lindsay Walton",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
+    user: "0x98719B13e883cBA22D25f10AA1B70bbefB5c849e",
+    tasks: 46,
+    rewards: 1000,
   },
   {
     rank: 2,
-    name: "Courtney Henry",
-    title: "Designer",
-    email: "courtney.henry@example.com",
-    role: "Admin",
+    user: "0x7A0151479C6b9B4851427F354452FDf53DDCD916",
+    tasks: 46,
+    rewards: 1000,
   },
   {
     rank: 3,
-    name: "Tom Cook",
-    title: "Director of Product",
-    email: "tom.cook@example.com",
-    role: "Member",
+    user: "0x492C69DFE04be4c4B224Ff48AAd2DD10a1433e12",
+    tasks: 46,
+    rewards: 1000,
   },
   {
     rank: 4,
-    name: "Whitney Francis",
-    title: "Copywriter",
-    email: "whitney.francis@example.com",
-    role: "Admin",
+    user: "0x492C69DFE04be4cBB424Ff48AAd2DD10a1433e12",
+    tasks: 46,
+    rewards: 1000,
   },
   {
     rank: 5,
-    name: "Leonard Krasner",
-    title: "Senior Designer",
-    email: "leonard.krasner@example.com",
-    role: "Owner",
+    user: "0x492C69DFE0424cBB224Ff48AAd2DD10a1433e12",
+    tasks: 46,
+    rewards: 1000,
   },
   {
     rank: 6,
-    name: "Floyd Miles",
-    title: "Principal Designer",
-    email: "floyd.miles@example.com",
-    role: "Member",
+    user: "0x492C693FE04be4cBB224Ff48AAd2DD10a1433e12",
+    tasks: 46,
+    rewards: 1000,
   },
 ];
 
-export default function Example() {
+export default function LeaderBoardList() {
   return (
-    <div className="px-4 sm:px-6 lg:px-8">
-      <div className="sm:flex sm:items-center">
-        <div className="sm:flex-auto">
-          <h1 className="text-base font-semibold text-gray-900">Users</h1>
-          <p className="mt-2 text-sm text-gray-700">
-            A list of all the users in your account including their name, title,
-            email and role.
-          </p>
-        </div>
-        <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-          <button
-            type="button"
-            className="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-          >
-            Add user
-          </button>
-        </div>
-      </div>
+    <div className="px-4 sm:px-3 lg:px-4">
       <div className="mt-8 flow-root">
         <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
           <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
@@ -78,49 +55,38 @@ export default function Example() {
                     </th>
                     <th
                       scope="col"
-                      className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                      className="py-3.5 pr-3 pl-4 text-left text-sm font-semibold text-gray-900 sm:pl-6"
                     >
-                      Title
+                      Name
                     </th>
                     <th
                       scope="col"
                       className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                     >
-                      Email
+                      Tasks
                     </th>
                     <th
                       scope="col"
-                      className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                      className="px-3 py-3.5 text-right text-sm font-semibold text-gray-900"
                     >
-                      Role
-                    </th>
-                    <th scope="col" className="py-3.5 pr-4 pl-3 sm:pr-6">
-                      <span className="sr-only">Edit</span>
+                      Rewards
                     </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
                   {people.map((person) => (
-                    <tr key={person.email}>
+                    <tr key={person.user}>
                       <td className="py-4 pr-3 pl-4 text-sm font-medium whitespace-nowrap text-gray-900 sm:pl-6">
-                        {person.name}
+                        {person.rank}
+                      </td>
+                      <td className="py-4 pr-3 pl-4 text-sm font-medium whitespace-nowrap text-gray-900 sm:pl-6">
+                        {person.user.slice(0, 6)}...{person.user.slice(-6)}
                       </td>
                       <td className="px-3 py-4 text-sm whitespace-nowrap text-gray-500">
-                        {person.title}
+                        {person.tasks}
                       </td>
-                      <td className="px-3 py-4 text-sm whitespace-nowrap text-gray-500">
-                        {person.email}
-                      </td>
-                      <td className="px-3 py-4 text-sm whitespace-nowrap text-gray-500">
-                        {person.role}
-                      </td>
-                      <td className="py-4 pr-4 pl-3 text-right text-sm font-medium whitespace-nowrap sm:pr-6">
-                        <a
-                          href="#"
-                          className="text-indigo-600 hover:text-indigo-900"
-                        >
-                          Edit<span className="sr-only">, {person.name}</span>
-                        </a>
+                      <td className="px-3 py-4 text-sm whitespace-nowrap text-gray-500 text-right">
+                        {person.rewards}
                       </td>
                     </tr>
                   ))}
@@ -133,4 +99,3 @@ export default function Example() {
     </div>
   );
 }
-3;

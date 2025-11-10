@@ -30,7 +30,7 @@ import {
   ChevronDownIcon,
   MagnifyingGlassIcon,
 } from "@heroicons/react/20/solid";
-import { User, Bolt, Wallet, Gem } from "lucide-react";
+import { User, Bolt, Wallet, Gem, LayoutDashboard } from "lucide-react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
@@ -75,6 +75,12 @@ const getNavigation = () => {
           icon: Wallet,
         },
       ],
+    },
+    {
+      name: "Advertiser",
+      href: "/advertiser", // Ana menüye tıklanınca buraya gider
+      icon: LayoutDashboard,
+      current: false,
     },
   ];
 
