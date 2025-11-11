@@ -48,13 +48,13 @@ const AdvertiserDashboard = () => {
     {
       label: "Create Campaign",
       icon: Plus,
-      to: "/advertiser/wizard",
+      to: "/advertiser/create",
       color: "bg-blue-100", // Soft blue
     },
     {
       label: "View Campaigns",
       icon: FileText,
-      to: "/advertiser/campaigns",
+      to: "/advertiser/mycampaigns",
       color: "bg-emerald-100", // Soft green
     },
     {
@@ -89,16 +89,19 @@ const AdvertiserDashboard = () => {
     <>
       <div className="space-y-8">
         {/* KPIs */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1  sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {kpis.map((kpi, index) => {
             const Icon = kpi.icon;
             return (
               <motion.div
                 key={kpi.label}
                 initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
+                animate={{
+                  opacity: 1,
+                  scale: 1,
+                }}
                 transition={{ delay: index * 0.1 }}
-                className="glass-card p-6 rounded-2xl"
+                className="glass-card p-6 rounded-2xl border-2 border-indigo-100 bg-linear-to-t from-indigo-100 via-white to-white"
               >
                 <div className="flex items-center justify-between mb-4">
                   <Icon className={`w-8 h-8 ${kpi.color}`} />

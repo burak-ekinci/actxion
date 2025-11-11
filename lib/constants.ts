@@ -108,6 +108,26 @@ const CHAIN_IDS = [
 
 export default CHAIN_IDS;
 
+const campaignCategories = [
+  {
+    name: "Location Check & Physical Activity",
+    description:
+      "Request users to visit specific geographic locations or verify in-store actions (e.g., receipt uploads, barcode scanning, dwell time proof). Drive real-world traffic and consumption.",
+    goals: ["Store Visit", "Product Consumption", "Dwell Time Proof"],
+  },
+  {
+    name: "Digital Engagement & Data Capture",
+    description:
+      "Ask users for digital interactions like social media comments/retweets, YouTube subscribes, completing surveys, or signing up for an email list. Gather attention data and leads.",
+    goals: [
+      "Lead Generation (Form Fill)",
+      "Social Media Reach",
+      "Email Opt-in",
+      "Learn-to-Earn",
+    ],
+  },
+];
+
 // coin terminal message
 // const message = {
 //   domain: { name: "Ape Terminal Launchpad" },

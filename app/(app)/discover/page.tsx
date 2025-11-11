@@ -2,7 +2,7 @@ import React from "react";
 import DashboardComponent from "@/components/ui/dashboard/DashboardComponent";
 import ActivitiesCards from "@/components/ui/dashboard/ActivitiesCards";
 
-const DashboardPage = () => {
+const DiscoverPage = () => {
   return (
     <>
       <ActivitiesCards />
@@ -11,4 +11,4 @@ const DashboardPage = () => {
   );
 };
 
-export default DashboardPage;
+export default DiscoverPage;

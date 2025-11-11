@@ -30,7 +30,20 @@ import {
   ChevronDownIcon,
   MagnifyingGlassIcon,
 } from "@heroicons/react/20/solid";
-import { User, Bolt, Wallet, Gem, LayoutDashboard } from "lucide-react";
+import {
+  User,
+  Bolt,
+  Wallet,
+  Gem,
+  LayoutDashboard,
+  Plus,
+  TableOfContents,
+  CheckCircle,
+  BadgeDollarSign,
+  Check,
+  DollarSign,
+  Gauge,
+} from "lucide-react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
@@ -41,8 +54,8 @@ import { useWeb3Store } from "@/store/web3Store";
 const getNavigation = () => {
   const baseNav = [
     {
-      name: "Dashboard",
-      href: "/dashboard",
+      name: "Discover",
+      href: "/discover",
       icon: HomeIcon,
       current: true,
     },
@@ -60,7 +73,7 @@ const getNavigation = () => {
     },
     {
       name: "Profile",
-      href: "/clinics",
+      href: "/profile",
       icon: User,
       current: false,
       children: [
@@ -81,6 +94,33 @@ const getNavigation = () => {
       href: "/advertiser", // Ana menüye tıklanınca buraya gider
       icon: LayoutDashboard,
       current: false,
+      children: [
+        {
+          name: "Advertiser Dashboard",
+          href: "/advertiser",
+          icon: Gauge,
+        },
+        {
+          name: "Create Campaign",
+          href: "/advertiser/create",
+          icon: Plus,
+        },
+        {
+          name: "View Campaigns",
+          href: "/advertiser/mycampaigns",
+          icon: TableOfContents,
+        },
+        {
+          name: "Review Submissions",
+          href: "/advertiser/submissions",
+          icon: Check,
+        },
+        {
+          name: "Manage Payouts",
+          href: "/advertiser/payouts",
+          icon: DollarSign,
+        },
+      ],
     },
   ];
 
@@ -220,7 +260,7 @@ export default function AppSidebarLayout({
                       const isActive = item.href
                         ? pathname === item.href
                         : item.children?.some(
-                            (child) => pathname === child.href
+                            (child: any) => pathname === child.href
                           );
 
                       const isOpen = openMenus[item.name] || false;
@@ -260,7 +300,7 @@ export default function AppSidebarLayout({
                               </div>
                               {isOpen && (
                                 <ul className="ml-8 space-y-1">
-                                  {item.children.map((child) => {
+                                  {item.children.map((child: any) => {
                                     const isChildActive =
                                       pathname === child.href;
                                     return (
@@ -375,7 +415,9 @@ export default function AppSidebarLayout({
                 {navigation.map((item) => {
                   const isActive = item.href
                     ? pathname === item.href
-                    : item.children?.some((child) => pathname === child.href);
+                    : item.children?.some(
+                        (child: any) => pathname === child.href
+                      );
 
                   const isOpen = openMenus[item.name] || false;
 
@@ -437,12 +479,12 @@ export default function AppSidebarLayout({
                           )}
                           {isOpen && desktopSidebarOpen && (
                             <ul className="ml-8 space-y-1">
-                              {item.children.map((child) => {
+                              {item.children.map((child: any) => {
                                 const isChildActive = pathname === child.href;
                                 return (
-                                  <li key={child.name}>
+                                  <li key={child.name as string}>
                                     <Link
-                                      href={child.href}
+                                      href={child.href as string}
                                       className={classNames(
                                         isChildActive
                                           ? "bg-gray-100 text-indigo-600"
