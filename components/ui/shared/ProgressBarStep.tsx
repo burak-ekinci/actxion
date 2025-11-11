@@ -1,14 +1,110 @@
 import { CheckIcon } from "@heroicons/react/20/solid";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRightIcon, ChevronLeft, ChevronRight } from "lucide-react";
-import React, { useState, useEffect } from "react";
-import Step1 from "@/components/ui/advertiser/create/Step1";
+import {
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  FileText,
+  MapPin,
+  Share,
+} from "lucide-react";
+import React, { Suspense, lazy, useEffect, useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
 import ProofSchema from "@/components/ui/advertiser/create/ProofSchema";
 
 // Yardımcı fonksiyon: Tailwind sınıflarını birleştirmek için
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
+
+const componentRegistry: Record<
+  string,
+  React.LazyExoticComponent<React.ComponentType<any>>
+> = {
+  LocationTimeSelector: lazy(
+    () => import("@/components/ui/advertiser/create/LocationTimeSelector")
+  ),
+  SocialLikeSelector: lazy(
+    () => import("@/components/ui/advertiser/create/SocialLikeSelector")
+  ),
+  ContentVideoSelector: lazy(
+    () => import("@/components/ui/advertiser/create/ContentVideoSelector")
+  ),
+};
+
+type ComponentRegistryKey = keyof typeof componentRegistry;
+
+interface SubCategoryConfig {
+  id: string;
+  name: string;
+  component: ComponentRegistryKey;
+  props: Record<string, any>;
+}
+
+interface CategoryConfig {
+  id: string;
+  name: string;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  subCategories: SubCategoryConfig[];
+}
+
+type BasicInfoFormValues = {
+  campaignTitle: string;
+  category: string;
+  subCategory: string;
+  description: string;
+  location?: any;
+  subCategoryData?: any;
+};
+
+const categoryConfig: CategoryConfig[] = [
+  {
+    id: "location",
+    name: "Location Check",
+    icon: MapPin,
+    subCategories: [
+      {
+        id: "stay_specific_time",
+        name: "Stay for specific time",
+        component: "LocationTimeSelector",
+        props: {
+          requiredTime: 30,
+          radius: 100,
+        },
+      },
+    ],
+  },
+  {
+    id: "social",
+    name: "Social Media",
+    icon: Share,
+    subCategories: [
+      {
+        id: "like_post",
+        name: "Like our post",
+        component: "SocialLikeSelector",
+        props: {
+          platforms: ["facebook", "instagram", "twitter"],
+        },
+      },
+    ],
+  },
+  {
+    id: "content",
+    name: "Content Consumption",
+    icon: FileText,
+    subCategories: [
+      {
+        id: "watch_video",
+        name: "Watch product video",
+        component: "ContentVideoSelector",
+        props: {
+          minWatchTime: 60,
+        },
+      },
+    ],
+  },
+];
 
 // Step Content Component - Değerleri saklar ve contract/veritabanına iletir
 interface StepContentProps {
@@ -25,6 +121,61 @@ const StepContent: React.FC<StepContentProps> = ({
   savedData,
 }) => {
   const [formData, setFormData] = useState(savedData || {});
+  const {
+    register: registerBasicInfo,
+    setValue: setBasicInfoValue,
+    watch: watchBasicInfo,
+  } = useForm<BasicInfoFormValues>({
+    defaultValues: {
+      campaignTitle: savedData?.campaignTitle ?? "",
+      category: savedData?.category ?? "",
+      subCategory: savedData?.subCategory ?? "",
+      description: savedData?.description ?? "",
+      location: savedData?.location ?? null,
+      subCategoryData: savedData?.subCategoryData ?? null,
+    },
+    mode: "onChange",
+  });
+
+  const categoryValue = watchBasicInfo("category");
+  const subCategoryValue = watchBasicInfo("subCategory");
+
+  const selectedCategory = useMemo(() => {
+    if (stepIndex !== 0) {
+      return null;
+    }
+    if (!categoryValue) {
+      return null;
+    }
+    return (
+      categoryConfig.find((category) => category.id === categoryValue) || null
+    );
+  }, [categoryValue, stepIndex]);
+
+  const selectedSubCategory = useMemo(() => {
+    if (!selectedCategory || stepIndex !== 0) {
+      return null;
+    }
+    if (!subCategoryValue) {
+      return null;
+    }
+    return (
+      selectedCategory.subCategories.find(
+        (subCategory) => subCategory.id === subCategoryValue
+      ) || null
+    );
+  }, [selectedCategory, subCategoryValue, stepIndex]);
+
+  useEffect(() => {
+    if (stepIndex !== 0) {
+      return;
+    }
+    setFormData(watchBasicInfo());
+    const subscription = watchBasicInfo((values) => {
+      setFormData(values);
+    });
+    return () => subscription.unsubscribe();
+  }, [stepIndex, watchBasicInfo]);
 
   // Form verilerini parent componente ilet
   useEffect(() => {
@@ -38,11 +189,158 @@ const StepContent: React.FC<StepContentProps> = ({
     setFormData(newData);
   };
 
+  const renderSubCategoryComponent = () => {
+    if (!selectedSubCategory) {
+      return null;
+    }
+
+    const Component = componentRegistry[selectedSubCategory.component];
+
+    if (!Component) {
+      return (
+        <div className="text-red-500">
+          Component not found: {selectedSubCategory.component}
+        </div>
+      );
+    }
+
+    return (
+      <Suspense
+        fallback={<div className="text-gray-500">Loading component...</div>}
+      >
+        <Component
+          {...selectedSubCategory.props}
+          onDataChange={(data: any) => {
+            setBasicInfoValue("subCategoryData", data);
+          }}
+        />
+      </Suspense>
+    );
+  };
+
   // Step'e göre farklı form alanları render et
   const renderStepForm = () => {
     switch (stepIndex) {
-      case 0: // Basic Info - Step1 component'ini kullan
-        return <Step1 onDataChange={onDataChange} savedData={savedData} />;
+      case 0:
+        return (
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-lg font-medium text-gray-900 mb-4">
+                Campaign Details
+              </h3>
+
+              <div className="mb-4">
+                <label
+                  htmlFor="campaignTitle"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Campaign Title
+                </label>
+                <input
+                  type="text"
+                  id="campaignTitle"
+                  placeholder="Enter campaign title"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  {...registerBasicInfo("campaignTitle", { required: true })}
+                />
+              </div>
+
+              <div className="mb-4">
+                <label
+                  htmlFor="category"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Category
+                </label>
+                <div className="relative">
+                  <select
+                    id="category"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent appearance-none pr-8"
+                    {...registerBasicInfo("category", {
+                      onChange: (event) => {
+                        const value = event.target.value;
+                        setBasicInfoValue("category", value);
+                        setBasicInfoValue("subCategory", "");
+                        setBasicInfoValue("subCategoryData", null);
+                      },
+                    })}
+                  >
+                    <option value="">Select a category</option>
+                    {categoryConfig.map((category) => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500 pointer-events-none" />
+                </div>
+              </div>
+
+              {selectedCategory && (
+                <div className="mb-4">
+                  <label
+                    htmlFor="subCategory"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
+                    SubCategory
+                  </label>
+                  <div className="relative">
+                    <select
+                      id="subCategory"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent appearance-none pr-8"
+                      {...registerBasicInfo("subCategory", {
+                        onChange: (event) => {
+                          const value = event.target.value;
+                          setBasicInfoValue("subCategory", value);
+
+                          if (!value) {
+                            setBasicInfoValue("subCategoryData", null);
+                            return;
+                          }
+
+                          const matchingSubCategory =
+                            selectedCategory.subCategories.find(
+                              (subCategory) => subCategory.id === value
+                            );
+
+                          if (!matchingSubCategory) {
+                            setBasicInfoValue("subCategoryData", null);
+                          }
+                        },
+                      })}
+                    >
+                      <option value="">Select a subcategory</option>
+                      {selectedCategory.subCategories.map((subCategory) => (
+                        <option key={subCategory.id} value={subCategory.id}>
+                          {subCategory.name}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500 pointer-events-none" />
+                  </div>
+                </div>
+              )}
+
+              {renderSubCategoryComponent()}
+
+              <div className="mb-4">
+                <label
+                  htmlFor="description"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Description
+                </label>
+                <textarea
+                  id="description"
+                  rows={4}
+                  placeholder="Describe your campaign requirements and instructions for participants"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  {...registerBasicInfo("description", { required: true })}
+                />
+              </div>
+            </div>
+          </div>
+        );
 
       case 1:
         return (
@@ -249,7 +547,7 @@ const StepContent: React.FC<StepContentProps> = ({
             </div>
 
             {/* Campaign Overview */}
-            <div className="bg-gradient-to-r from-indigo-50 to-blue-50 border border-indigo-200 rounded-xl p-6">
+            <div className="bg-linear-to-r from-indigo-50 to-blue-50 border border-indigo-200 rounded-xl p-6">
               <h4 className="text-lg font-semibold text-indigo-900 mb-4 flex items-center">
                 <span className="w-2 h-2 bg-indigo-600 rounded-full mr-3"></span>
                 Campaign Overview
@@ -420,24 +718,35 @@ const StepContent: React.FC<StepContentProps> = ({
                 Validation & Proof Requirements
               </h4>
               <div className="space-y-2">
-                <div className="flex items-center space-x-2">
-                  <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                  <span className="text-sm text-purple-700">
-                    GPS Location verification required
-                  </span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                  <span className="text-sm text-purple-700">
-                    Stay duration validation
-                  </span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                  <span className="text-sm text-purple-700">
-                    Real-time location tracking
-                  </span>
-                </div>
+                {formData.proofType === "gps_location" ? (
+                  <>
+                    <div className="flex items-center space-x-2">
+                      <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                      <span className="text-sm text-purple-700">
+                        GPS Location verification required
+                      </span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                      <span className="text-sm text-purple-700">
+                        Stay duration validation
+                      </span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                      <span className="text-sm text-purple-700">
+                        Real-time location tracking
+                      </span>
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex items-center space-x-2">
+                    <span className="w-2 h-2 bg-yellow-500 rounded-full"></span>
+                    <span className="text-sm text-purple-700">
+                      No proof type selected yet
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -518,6 +827,13 @@ export default function AnimatedStepper({ steps }: { steps: any[] }) {
     (acc, curr) => ({ ...acc, ...curr }),
     {}
   );
+
+  const currentSavedData = useMemo(() => {
+    if (currentStepIndex >= 3) {
+      return { ...allStepData, ...stepData[currentStepIndex] };
+    }
+    return stepData[currentStepIndex];
+  }, [allStepData, currentStepIndex, stepData]);
 
   // Adım durumunu dinamik olarak güncelleme fonksiyonu
   const updateSteps = steps.map((step: any, index: number) => {
@@ -677,7 +993,7 @@ export default function AnimatedStepper({ steps }: { steps: any[] }) {
             onDataChange={(data) =>
               handleStepDataChange(currentStepIndex, data)
             }
-            savedData={stepData[currentStepIndex]}
+            savedData={currentSavedData}
           />
         </AnimatePresence>
 
