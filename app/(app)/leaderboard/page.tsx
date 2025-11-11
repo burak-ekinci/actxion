@@ -6,8 +6,11 @@ const LeaderboardPage = () => {
   return (
     <>
       <PageHeading
-        title="Leaderboard"
-        description="See the top performers in the ACTXION Leaderboard. The most active users in the ACTXION ecosystem."
+        config={{
+          title: "Leaderboard",
+          description:
+            "See the top performers in the ACTXION Leaderboard. The most active users in the ACTXION ecosystem.",
+        }}
       />
       <LeaderBoardList />
     </>

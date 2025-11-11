@@ -33,8 +33,10 @@ const CreateCampaignPage = () => {
   return (
     <div>
       <PageHeading
-        title="Create Campaign"
-        description="Create a new campaign"
+        config={{
+          title: "Create Campaign",
+          description: "Create a new campaign",
+        }}
       />
       <ProgressBarStep steps={steps} />
     </div>

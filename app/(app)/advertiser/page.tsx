@@ -6,8 +6,10 @@ const AdvertiserPage = () => {
   return (
     <div>
       <PageHeading
-        title="Advertiser"
-        description="Manage campaigns and track performance"
+        config={{
+          title: "Advertiser",
+          description: "Manage campaigns and track performance",
+        }}
       />
       <AdvertiserDashboard />
     </div>
