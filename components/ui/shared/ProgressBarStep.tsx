@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRightIcon, ChevronLeft, ChevronRight } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import Step1 from "@/components/ui/advertiser/create/Step1";
+import ProofSchema from "@/components/ui/advertiser/create/ProofSchema";
 
 // Yardımcı fonksiyon: Tailwind sınıflarını birleştirmek için
 function classNames(...classes: string[]) {
@@ -43,7 +44,7 @@ const StepContent: React.FC<StepContentProps> = ({
       case 0: // Basic Info - Step1 component'ini kullan
         return <Step1 onDataChange={onDataChange} savedData={savedData} />;
 
-      case 1: // Budget
+      case 1:
         return (
           <div className="space-y-6">
             <div className="mb-5">
@@ -232,69 +233,222 @@ const StepContent: React.FC<StepContentProps> = ({
           </div>
         );
 
-      case 2: // NFT Erişim Onayı
+      case 2: // Proof Schema
         return (
-          <div className="space-y-4">
-            <h3 className="text-xl font-semibold text-gray-900">{step.name}</h3>
-            <p className="text-gray-600">{step.description}</p>
-            <div className="space-y-3">
-              <input
-                type="text"
-                placeholder="NFT Contract Address"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                value={formData.nftContract || ""}
-                onChange={(e) =>
-                  handleInputChange("nftContract", e.target.value)
-                }
-              />
-              <input
-                type="text"
-                placeholder="Token ID"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                value={formData.tokenId || ""}
-                onChange={(e) => handleInputChange("tokenId", e.target.value)}
-              />
-              <button
-                className="w-full bg-indigo-600 text-white py-3 px-4 rounded-lg hover:bg-indigo-700 transition-colors"
-                onClick={() => handleInputChange("nftVerified", true)}
-              >
-                Verify NFT Ownership
-              </button>
-            </div>
-          </div>
+          <ProofSchema onDataChange={onDataChange} savedData={savedData} />
         );
 
-      case 3: // Kampanya Ayarları
+      case 3: // Preview
         return (
-          <div className="space-y-4">
-            <h3 className="text-xl font-semibold text-gray-900">{step.name}</h3>
-            <p className="text-gray-600">{step.description}</p>
-            <div className="space-y-3">
-              <input
-                type="number"
-                placeholder="Campaign Budget (USD)"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                value={formData.budget || ""}
-                onChange={(e) => handleInputChange("budget", e.target.value)}
-              />
-              <input
-                type="text"
-                placeholder="Target Audience"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                value={formData.targetAudience || ""}
-                onChange={(e) =>
-                  handleInputChange("targetAudience", e.target.value)
-                }
-              />
-              <textarea
-                placeholder="Campaign Description"
-                rows={4}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                value={formData.description || ""}
-                onChange={(e) =>
-                  handleInputChange("description", e.target.value)
-                }
-              />
+          <div className="space-y-6">
+            <div className="mb-5">
+              <h3 className="text-xl font-semibold text-gray-900">
+                {step.name}
+              </h3>
+              <p className="text-gray-600">{step.description}</p>
+            </div>
+
+            {/* Campaign Overview */}
+            <div className="bg-gradient-to-r from-indigo-50 to-blue-50 border border-indigo-200 rounded-xl p-6">
+              <h4 className="text-lg font-semibold text-indigo-900 mb-4 flex items-center">
+                <span className="w-2 h-2 bg-indigo-600 rounded-full mr-3"></span>
+                Campaign Overview
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-3">
+                  <div>
+                    <span className="text-sm font-medium text-indigo-700">
+                      Campaign Title:
+                    </span>
+                    <p className="text-gray-900 font-medium">
+                      {formData.campaignTitle || "Not specified"}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-sm font-medium text-indigo-700">
+                      Category:
+                    </span>
+                    <p className="text-gray-900 font-medium">
+                      {formData.category
+                        ? formData.category.charAt(0).toUpperCase() +
+                          formData.category.slice(1)
+                        : "Not specified"}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-sm font-medium text-indigo-700">
+                      Subcategory:
+                    </span>
+                    <p className="text-gray-900 font-medium">
+                      {formData.subCategory || "Not specified"}
+                    </p>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <div>
+                    <span className="text-sm font-medium text-indigo-700">
+                      Description:
+                    </span>
+                    <p className="text-gray-900 font-medium text-sm">
+                      {formData.description || "Not specified"}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-sm font-medium text-indigo-700">
+                      Proof Type:
+                    </span>
+                    <p className="text-gray-900 font-medium">
+                      {formData.proofType === "gps_location"
+                        ? "GPS Location"
+                        : "Not specified"}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Location Details */}
+            {formData.subCategoryData && (
+              <div className="bg-green-50 border border-green-200 rounded-xl p-6">
+                <h4 className="text-lg font-semibold text-green-900 mb-4 flex items-center">
+                  <span className="w-2 h-2 bg-green-600 rounded-full mr-3"></span>
+                  Location Requirements
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <div>
+                      <span className="text-sm font-medium text-green-700">
+                        Required Time:
+                      </span>
+                      <p className="text-gray-900 font-medium">
+                        {formData.subCategoryData.selectedTime ||
+                          formData.subCategoryData.requiredTime}{" "}
+                        minutes
+                      </p>
+                    </div>
+                    <div>
+                      <span className="text-sm font-medium text-green-700">
+                        Radius:
+                      </span>
+                      <p className="text-gray-900 font-medium">
+                        {formData.subCategoryData.radius} meters
+                      </p>
+                    </div>
+                  </div>
+                  {formData.subCategoryData.location && (
+                    <div>
+                      <span className="text-sm font-medium text-green-700">
+                        Coordinates:
+                      </span>
+                      <p className="text-gray-900 font-medium text-sm">
+                        Lat: {formData.subCategoryData.location.lat?.toFixed(4)}
+                        <br />
+                        Lng: {formData.subCategoryData.location.lng?.toFixed(4)}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Budget Details */}
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+              <h4 className="text-lg font-semibold text-blue-900 mb-4 flex items-center">
+                <span className="w-2 h-2 bg-blue-600 rounded-full mr-3"></span>
+                Budget & Timeline
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-white p-3 rounded-lg">
+                  <span className="text-xs font-medium text-blue-700 uppercase tracking-wide">
+                    Target Participants
+                  </span>
+                  <p className="text-2xl font-bold text-blue-900">
+                    {formData.totalMemberNumber || "N/A"}
+                  </p>
+                </div>
+                <div className="bg-white p-3 rounded-lg">
+                  <span className="text-xs font-medium text-blue-700 uppercase tracking-wide">
+                    Reward per User
+                  </span>
+                  <p className="text-2xl font-bold text-blue-900">
+                    {formData.tokenAmountPerMember || "N/A"} ACTX
+                  </p>
+                </div>
+                <div className="bg-white p-3 rounded-lg">
+                  <span className="text-xs font-medium text-blue-700 uppercase tracking-wide">
+                    Total Budget
+                  </span>
+                  <p className="text-2xl font-bold text-blue-900">
+                    {formData.tokenAmount ||
+                      (formData.totalMemberNumber &&
+                      formData.tokenAmountPerMember
+                        ? formData.totalMemberNumber *
+                          formData.tokenAmountPerMember
+                        : "N/A")}{" "}
+                    ACTX
+                  </p>
+                </div>
+              </div>
+              <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <span className="text-sm font-medium text-blue-700">
+                    Start Date:
+                  </span>
+                  <p className="text-gray-900 font-medium">
+                    {formData.startDate
+                      ? new Date(formData.startDate).toLocaleDateString()
+                      : "Not specified"}
+                  </p>
+                </div>
+                <div>
+                  <span className="text-sm font-medium text-blue-700">
+                    End Date:
+                  </span>
+                  <p className="text-gray-900 font-medium">
+                    {formData.endDate
+                      ? new Date(formData.endDate).toLocaleDateString()
+                      : "Not specified"}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Validation Summary */}
+            <div className="bg-purple-50 border border-purple-200 rounded-xl p-6">
+              <h4 className="text-lg font-semibold text-purple-900 mb-4 flex items-center">
+                <span className="w-2 h-2 bg-purple-600 rounded-full mr-3"></span>
+                Validation & Proof Requirements
+              </h4>
+              <div className="space-y-2">
+                <div className="flex items-center space-x-2">
+                  <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                  <span className="text-sm text-purple-700">
+                    GPS Location verification required
+                  </span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                  <span className="text-sm text-purple-700">
+                    Stay duration validation
+                  </span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                  <span className="text-sm text-purple-700">
+                    Real-time location tracking
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex justify-center pt-4">
+              <button
+                className="bg-indigo-600 text-white px-8 py-3 rounded-lg hover:bg-indigo-700 transition-colors font-medium"
+                onClick={() => handleInputChange("confirmed", true)}
+              >
+                Launch Campaign
+              </button>
             </div>
           </div>
         );
