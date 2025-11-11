@@ -2,6 +2,7 @@ import { CheckIcon } from "@heroicons/react/20/solid";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRightIcon, ChevronLeft, ChevronRight } from "lucide-react";
 import React, { useState, useEffect } from "react";
+import Step1 from "@/components/ui/advertiser/create/Step1";
 
 // Yardımcı fonksiyon: Tailwind sınıflarını birleştirmek için
 function classNames(...classes: string[]) {
@@ -29,7 +30,7 @@ const StepContent: React.FC<StepContentProps> = ({
     if (Object.keys(formData).length > 0) {
       onDataChange(formData);
     }
-  }, [formData, onDataChange]);
+  }, [formData]); // onDataChange'i dependency'den çıkardık
 
   const handleInputChange = (field: string, value: any) => {
     const newData = { ...formData, [field]: value };
@@ -39,64 +40,195 @@ const StepContent: React.FC<StepContentProps> = ({
   // Step'e göre farklı form alanları render et
   const renderStepForm = () => {
     switch (stepIndex) {
-      case 0: // Hesap Oluştur
-        return (
-          <div className="space-y-4">
-            <h3 className="text-xl font-semibold text-gray-900">{step.name}</h3>
-            <p className="text-gray-600">{step.description}</p>
-            <div className="space-y-3">
-              <input
-                type="text"
-                placeholder="Wallet Address"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                value={formData.walletAddress || ""}
-                onChange={(e) =>
-                  handleInputChange("walletAddress", e.target.value)
-                }
-              />
-              <input
-                type="email"
-                placeholder="Email Address"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                value={formData.email || ""}
-                onChange={(e) => handleInputChange("email", e.target.value)}
-              />
-            </div>
-          </div>
-        );
+      case 0: // Basic Info - Step1 component'ini kullan
+        return <Step1 onDataChange={onDataChange} savedData={savedData} />;
 
-      case 1: // Profil Bilgileri
+      case 1: // Budget
         return (
-          <div className="space-y-4">
-            <h3 className="text-xl font-semibold text-gray-900">{step.name}</h3>
-            <p className="text-gray-600">{step.description}</p>
-            <div className="space-y-3">
-              <input
-                type="text"
-                placeholder="Company Name"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                value={formData.companyName || ""}
-                onChange={(e) =>
-                  handleInputChange("companyName", e.target.value)
-                }
-              />
-              <input
-                type="text"
-                placeholder="Contact Person"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                value={formData.contactPerson || ""}
-                onChange={(e) =>
-                  handleInputChange("contactPerson", e.target.value)
-                }
-              />
-              <input
-                type="tel"
-                placeholder="Phone Number"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                value={formData.phone || ""}
-                onChange={(e) => handleInputChange("phone", e.target.value)}
-              />
+          <div className="space-y-6">
+            <div className="mb-5">
+              <h3 className="text-xl font-semibold text-gray-900">
+                {step.name}
+              </h3>
+              <p className="text-gray-600">{step.description}</p>
             </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Target Participants */}
+              <div className="space-y-2">
+                <label
+                  htmlFor="totalMemberNumber"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Target Participants *
+                </label>
+                <input
+                  type="number"
+                  id="totalMemberNumber"
+                  placeholder="e.g., 100"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  value={formData.totalMemberNumber || ""}
+                  onChange={(e) =>
+                    handleInputChange(
+                      "totalMemberNumber",
+                      parseInt(e.target.value) || 0
+                    )
+                  }
+                  min="1"
+                  required
+                />
+              </div>
+
+              {/* Reward per User */}
+              <div className="space-y-2">
+                <label
+                  htmlFor="tokenAmountPerMember"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Reward per User *
+                </label>
+                <input
+                  type="number"
+                  id="tokenAmountPerMember"
+                  placeholder="e.g., 10"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  value={formData.tokenAmountPerMember || ""}
+                  onChange={(e) =>
+                    handleInputChange(
+                      "tokenAmountPerMember",
+                      parseInt(e.target.value) || 0
+                    )
+                  }
+                  min="1"
+                  step="0.01"
+                  required
+                />
+              </div>
+
+              {/* Currency - Readonly */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Currency
+                </label>
+                <input
+                  type="text"
+                  value="ACTX"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-600 cursor-not-allowed"
+                  readOnly
+                />
+              </div>
+
+              {/* Total Budget - Auto-calculated */}
+              <div className="space-y-2">
+                <label
+                  htmlFor="tokenAmount"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Total Budget *
+                </label>
+                <input
+                  type="number"
+                  id="tokenAmount"
+                  placeholder="Auto-calculated or manual"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  value={
+                    formData.tokenAmount ||
+                    (formData.totalMemberNumber && formData.tokenAmountPerMember
+                      ? formData.totalMemberNumber *
+                        formData.tokenAmountPerMember
+                      : "")
+                  }
+                  onChange={(e) =>
+                    handleInputChange(
+                      "tokenAmount",
+                      parseInt(e.target.value) || 0
+                    )
+                  }
+                  min="1"
+                  readOnly={
+                    !!(
+                      formData.totalMemberNumber &&
+                      formData.tokenAmountPerMember
+                    )
+                  }
+                />
+                <p className="text-xs text-gray-500">
+                  Suggested: Enter values above
+                </p>
+              </div>
+            </div>
+
+            {/* Date Fields */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Start Date */}
+              <div className="space-y-2">
+                <label
+                  htmlFor="startDate"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Start Date *
+                </label>
+                <input
+                  type="date"
+                  id="startDate"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  value={formData.startDate || ""}
+                  onChange={(e) =>
+                    handleInputChange("startDate", e.target.value)
+                  }
+                  required
+                />
+              </div>
+
+              {/* End Date */}
+              <div className="space-y-2">
+                <label
+                  htmlFor="endDate"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  End Date *
+                </label>
+                <input
+                  type="date"
+                  id="endDate"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  value={formData.endDate || ""}
+                  onChange={(e) => handleInputChange("endDate", e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Budget Summary */}
+            {formData.totalMemberNumber && formData.tokenAmountPerMember && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h4 className="text-md font-medium text-blue-900 mb-2">
+                  Budget Summary
+                </h4>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span className="text-blue-700">Target Participants:</span>
+                    <span className="font-medium ml-2">
+                      {formData.totalMemberNumber}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-blue-700">Reward per User:</span>
+                    <span className="font-medium ml-2">
+                      {formData.tokenAmountPerMember} ACTX
+                    </span>
+                  </div>
+                  <div className="col-span-2">
+                    <span className="text-blue-700">Total Budget:</span>
+                    <span className="font-medium ml-2 text-lg">
+                      {formData.totalMemberNumber *
+                        formData.tokenAmountPerMember}{" "}
+                      ACTX
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         );
 
@@ -349,14 +481,14 @@ export default function AnimatedStepper({ steps }: { steps: any[] }) {
                     )}
                   >
                     {stepIdx === 0
-                      ? "Kayıt"
+                      ? "Basic Info"
                       : stepIdx === 1
-                      ? "Profil"
+                      ? "Budget"
                       : stepIdx === 2
-                      ? "NFT"
+                      ? "Proof Schema"
                       : stepIdx === 3
-                      ? "Ayarlar"
-                      : "Onay"}
+                      ? "Preview"
+                      : "Submit Campaign"}
                   </span>
                 </div>,
 
@@ -436,23 +568,26 @@ export default function AnimatedStepper({ steps }: { steps: any[] }) {
 // ----------------------------------------------------------------------
 
 const initialSteps = [
-  { name: "Hesap Oluştur", description: "Kayıt ve Cüzdan Bağlama.", href: "#" },
   {
-    name: "Profil Bilgileri",
-    description: "Şirket ve İletişim Detayları.",
+    name: "Basic Info",
+    description: "Enter campaign title, category and details.",
     href: "#",
   },
   {
-    name: "NFT Erişim Onayı",
-    description: "NFT Varlığının Doğrulanması.",
+    name: "Budget",
+    description: "Set your campaign budget and rewards.",
     href: "#",
   },
   {
-    name: "Kampanya Ayarları",
-    description: "Bütçe ve Hedef Belirleme.",
+    name: "Proof Schema",
+    description: "Configure proof requirements and validation.",
     href: "#",
   },
-  { name: "Önizleme ve Onay", description: "Kampanyayı Başlatma.", href: "#" },
+  {
+    name: "Preview",
+    description: "Review and launch your campaign.",
+    href: "#",
+  },
 ];
 
 export function ParentComponent() {

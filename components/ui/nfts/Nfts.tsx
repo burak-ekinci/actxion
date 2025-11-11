@@ -55,7 +55,7 @@ const Nfts = () => {
 
   return (
     <>
-      <div className="pt-8 sm:pt-32">
+      <div className="pt-3">
         <div className="mx-auto max-w-7xl px-2 lg:px-8">
           <div className="mx-auto max-w-4xl text-center">
             <PageInfo title="Pricing" />

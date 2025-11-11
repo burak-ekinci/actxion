@@ -7,25 +7,25 @@ const CreateCampaignPage = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const steps = [
     {
-      name: "Step 1",
-      description: "Step 1 description",
+      name: "Basic Info",
+      description: "Enter campaign title, category and details",
       href: "#",
     },
 
     {
-      name: "Step 3",
-      description: "Step 3 description",
+      name: "Budget",
+      description: "Set your campaign budget and rewards",
       href: "#",
     },
 
     {
-      name: "Step 4",
-      description: "Step 4 description",
+      name: "Proof Schema",
+      description: "Configure proof requirements and validation",
       href: "#",
     },
     {
-      name: "Step 5",
-      description: "Step 5 description",
+      name: "Preview",
+      description: "Preview your campaign",
       href: "#",
     },
   ];
