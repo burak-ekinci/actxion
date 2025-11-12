@@ -11,6 +11,7 @@ import {
 } from "wagmi";
 import { contracts } from "@/contracts";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function Home() {
   const router = useRouter();
@@ -146,136 +147,144 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4 gap-4 bg-gray-900">
-      <h1 className="text-2xl text-violet-500 font-bold mb-6">
-        Wallet & Contract Interactions{" "}
-      </h1>
-
-      <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md">
-        <div className="mb-4">
-          <h2 className="text-xl text-white font-semibold mb-2">Wallet</h2>
-          <div className="bg-gray-700 p-3 rounded">
-            <p className="text-gray-300">
-              <span className="font-medium">Status:</span>{" "}
-              {wallet.isConnected ? (
-                <span className="text-green-400">• Connected</span>
-              ) : (
-                <span className="text-yellow-400">• Disconnected</span>
-              )}
-            </p>
-
-            {wallet.address && (
-              <p className="text-gray-300 mt-2 break-all">
-                <span className="font-medium">Address:</span>{" "}
-                <span className="text-blue-300">{wallet.address}</span>
-              </p>
-            )}
-
-            {wallet.chain && (
-              <p className="text-gray-300 mt-2 break-all">
-                <span className="font-medium">Chain:</span>{" "}
-                <span className="text-blue-300">{wallet.chain}</span>
-              </p>
-            )}
-
-            {wallet.isError && (
-              <p className="text-red-400 mt-2">
-                <span className="font-medium">Error:</span>{" "}
-                {wallet.error?.message || "Bilinmeyen hata"}
-              </p>
-            )}
-          </div>
-        </div>
-
-        <button
-          onClick={connectWallet}
-          disabled={isConnecting || wallet.isLoading}
-          className={`w-full py-3 px-4 rounded-md font-medium transition-colors ${
-            wallet.isConnected
-              ? "bg-green-600 hover:bg-green-700 text-white"
-              : "bg-blue-600 hover:bg-blue-700 text-white"
-          } ${
-            (isConnecting || wallet.isLoading) &&
-            "opacity-70 cursor-not-allowed"
-          }`}
-        >
-          {isConnecting || wallet.isLoading
-            ? "Connecting..."
-            : wallet.isConnected
-            ? "Connected"
-            : "Connect Wallet"}
-        </button>
-
-        {wallet.isConnected && (
-          <button
-            onClick={() => actions.disconnect()}
-            className="w-full mt-3 py-2 px-4 bg-red-600 hover:bg-red-700 text-white rounded-md font-medium transition-colors"
-          >
-            Disconnect Wallet
-          </button>
-        )}
+    <>
+      <div className="flex flex-col items-center justify-center h-screen">
+        <h1 className="text-2xl text-violet-500 font-bold mb-6">GO TO LOGIN</h1>
+        <Link href="/login" className="text-blue-500 hover:text-blue-700">
+          Login
+        </Link>
       </div>
+    </>
+    // <div className="flex flex-col items-center justify-center min-h-screen p-4 gap-4 bg-gray-900">
+    //   <h1 className="text-2xl text-violet-500 font-bold mb-6">
+    //     Wallet & Contract Interactions{" "}
+    //   </h1>
 
-      {/* Kimlik Doğrulama Bölümü */}
-      {wallet.isConnected && (
-        <div className="card flex flex-col w-full max-w-md bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-          <div className="bg-gray-700 p-4 border-b border-gray-600">
-            <h3 className="text-lg font-medium text-gray-200">
-              Kimlik Doğrulama
-            </h3>
-          </div>
-          <div className="p-6 flex flex-col">
-            <div className="mb-4">
-              <p className="text-gray-300 mb-2">
-                Cüzdanınızla kimliğinizi doğrulamak için, backend'den alınan bir
-                nonce değerini imzalamanız gerekiyor.
-              </p>
+    //   <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md">
+    //     <div className="mb-4">
+    //       <h2 className="text-xl text-white font-semibold mb-2">Wallet</h2>
+    //       <div className="bg-gray-700 p-3 rounded">
+    //         <p className="text-gray-300">
+    //           <span className="font-medium">Status:</span>{" "}
+    //           {wallet.isConnected ? (
+    //             <span className="text-green-400">• Connected</span>
+    //           ) : (
+    //             <span className="text-yellow-400">• Disconnected</span>
+    //           )}
+    //         </p>
 
-              {authStatus.status !== "idle" && (
-                <div
-                  className={`mt-3 p-3 rounded ${
-                    authStatus.status === "loading"
-                      ? "bg-blue-900 text-blue-200"
-                      : authStatus.status === "success"
-                      ? "bg-green-900 text-green-200"
-                      : "bg-red-900 text-red-200"
-                  }`}
-                >
-                  <p>{authStatus.message}</p>
-                </div>
-              )}
+    //         {wallet.address && (
+    //           <p className="text-gray-300 mt-2 break-all">
+    //             <span className="font-medium">Address:</span>{" "}
+    //             <span className="text-blue-300">{wallet.address}</span>
+    //           </p>
+    //         )}
 
-              {messageToSign && (
-                <div className="mt-3 p-3 bg-gray-700 rounded">
-                  <p className="text-sm text-gray-400">İmzalanacak Mesaj:</p>
-                  <p className="text-amber-400 break-all">{messageToSign}</p>
-                </div>
-              )}
+    //         {wallet.chain && (
+    //           <p className="text-gray-300 mt-2 break-all">
+    //             <span className="font-medium">Chain:</span>{" "}
+    //             <span className="text-blue-300">{wallet.chain}</span>
+    //           </p>
+    //         )}
 
-              {signature && (
-                <div className="mt-3 p-3 bg-gray-700 rounded">
-                  <p className="text-sm text-gray-400">İmza:</p>
-                  <p className="text-amber-400 break-all">{signature}</p>
-                </div>
-              )}
-            </div>
+    //         {wallet.isError && (
+    //           <p className="text-red-400 mt-2">
+    //             <span className="font-medium">Error:</span>{" "}
+    //             {wallet.error?.message || "Bilinmeyen hata"}
+    //           </p>
+    //         )}
+    //       </div>
+    //     </div>
 
-            <button
-              onClick={signMessage}
-              disabled={isAuthenticating}
-              className={`w-full py-3 px-4 ${
-                isAuthenticating
-                  ? " bg-red-400 hover:bg-red-300"
-                  : "bg-sky-600 hover:bg-sky-500"
-              } text-white rounded-md font-medium transition-colors ${
-                isAuthenticating && "opacity-70 cursor-not-allowed"
-              }`}
-            >
-              {isAuthenticating ? "Signing..." : "Sign in"}
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
+    //     <button
+    //       onClick={connectWallet}
+    //       disabled={isConnecting || wallet.isLoading}
+    //       className={`w-full py-3 px-4 rounded-md font-medium transition-colors ${
+    //         wallet.isConnected
+    //           ? "bg-green-600 hover:bg-green-700 text-white"
+    //           : "bg-blue-600 hover:bg-blue-700 text-white"
+    //       } ${
+    //         (isConnecting || wallet.isLoading) &&
+    //         "opacity-70 cursor-not-allowed"
+    //       }`}
+    //     >
+    //       {isConnecting || wallet.isLoading
+    //         ? "Connecting..."
+    //         : wallet.isConnected
+    //         ? "Connected"
+    //         : "Connect Wallet"}
+    //     </button>
+
+    //     {wallet.isConnected && (
+    //       <button
+    //         onClick={() => actions.disconnect()}
+    //         className="w-full mt-3 py-2 px-4 bg-red-600 hover:bg-red-700 text-white rounded-md font-medium transition-colors"
+    //       >
+    //         Disconnect Wallet
+    //       </button>
+    //     )}
+    //   </div>
+
+    //   {/* Kimlik Doğrulama Bölümü */}
+    //   {wallet.isConnected && (
+    //     <div className="card flex flex-col w-full max-w-md bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+    //       <div className="bg-gray-700 p-4 border-b border-gray-600">
+    //         <h3 className="text-lg font-medium text-gray-200">
+    //           Kimlik Doğrulama
+    //         </h3>
+    //       </div>
+    //       <div className="p-6 flex flex-col">
+    //         <div className="mb-4">
+    //           <p className="text-gray-300 mb-2">
+    //             Cüzdanınızla kimliğinizi doğrulamak için, backend'den alınan bir
+    //             nonce değerini imzalamanız gerekiyor.
+    //           </p>
+
+    //           {authStatus.status !== "idle" && (
+    //             <div
+    //               className={`mt-3 p-3 rounded ${
+    //                 authStatus.status === "loading"
+    //                   ? "bg-blue-900 text-blue-200"
+    //                   : authStatus.status === "success"
+    //                   ? "bg-green-900 text-green-200"
+    //                   : "bg-red-900 text-red-200"
+    //               }`}
+    //             >
+    //               <p>{authStatus.message}</p>
+    //             </div>
+    //           )}
+
+    //           {messageToSign && (
+    //             <div className="mt-3 p-3 bg-gray-700 rounded">
+    //               <p className="text-sm text-gray-400">İmzalanacak Mesaj:</p>
+    //               <p className="text-amber-400 break-all">{messageToSign}</p>
+    //             </div>
+    //           )}
+
+    //           {signature && (
+    //             <div className="mt-3 p-3 bg-gray-700 rounded">
+    //               <p className="text-sm text-gray-400">İmza:</p>
+    //               <p className="text-amber-400 break-all">{signature}</p>
+    //             </div>
+    //           )}
+    //         </div>
+
+    //         <button
+    //           onClick={signMessage}
+    //           disabled={isAuthenticating}
+    //           className={`w-full py-3 px-4 ${
+    //             isAuthenticating
+    //               ? " bg-red-400 hover:bg-red-300"
+    //               : "bg-sky-600 hover:bg-sky-500"
+    //           } text-white rounded-md font-medium transition-colors ${
+    //             isAuthenticating && "opacity-70 cursor-not-allowed"
+    //           }`}
+    //         >
+    //           {isAuthenticating ? "Signing..." : "Sign in"}
+    //         </button>
+    //       </div>
+    //     </div>
+    //   )}
+    // </div>
   );
 }

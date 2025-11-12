@@ -20,7 +20,18 @@ import {
 import Image from "next/image";
 import { WalletIcon } from "@heroicons/react/24/outline";
 import { Signature } from "lucide-react";
+import Link from "next/link";
+import { signIn, getCsrfToken } from "next-auth/react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { toast } from "react-toastify";
 
+const signInSchema = z.object({
+  email: z.string().email("Geçersiz email adresi"),
+  password: z.string().min(1, "Şifre gerekli"),
+});
+type SignInFormData = z.infer<typeof signInSchema>;
 export default function LoginComponent() {
   const router = useRouter();
   const { wallet, actions } = useWeb3Store();
@@ -35,6 +46,24 @@ export default function LoginComponent() {
     status: "idle",
     message: "",
   });
+  const [csrfToken, setCsrfToken] = useState("");
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<SignInFormData>({
+    resolver: zodResolver(signInSchema),
+  });
+
+  // CSRF token'ı al
+  useEffect(() => {
+    const getToken = async () => {
+      const token = await getCsrfToken();
+      setCsrfToken(token || "");
+    };
+    getToken();
+  }, []);
 
   const [signature, setSignature] = useState<string | null>(null);
   const [messageToSign, setMessageToSign] = useState<string | null>(null);
@@ -165,6 +194,26 @@ export default function LoginComponent() {
     }
   };
 
+  const onSubmit = async (data: SignInFormData) => {
+    try {
+      const response = await signIn("credentials", {
+        redirect: false,
+        email: data.email,
+        password: data.password,
+      });
+
+      if (response?.error) {
+        toast.error("Giriş başarısız: " + response.error);
+      } else {
+        toast.success("Giriş başarılı!");
+        router.push("/discover");
+      }
+    } catch (error) {
+      toast.error("Giriş sırasında bir hata oluştu");
+      console.error("Login error:", error);
+    }
+  };
+
   return (
     <>
       {/*
@@ -186,7 +235,13 @@ export default function LoginComponent() {
 
         <div className="mt-2 sm:mx-auto sm:w-full sm:max-w-[480px]">
           <div className="bg-white px-6 py-12 shadow-sm sm:rounded-lg sm:px-12">
-            <form action="#" method="POST" className="space-y-6">
+            <form
+              action="/api/auth/callback/credentials"
+              method="POST"
+              onSubmit={handleSubmit(onSubmit)}
+              className="space-y-6"
+            >
+              <input name="csrfToken" type="hidden" value={csrfToken} />
               <div>
                 <label
                   htmlFor="email"
@@ -197,12 +252,17 @@ export default function LoginComponent() {
                 <div className="mt-2">
                   <input
                     id="email"
-                    name="email"
+                    {...register("email")}
                     type="email"
                     required
                     autoComplete="email"
                     className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                   />
+                  {errors.email && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.email.message}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -216,12 +276,17 @@ export default function LoginComponent() {
                 <div className="mt-2">
                   <input
                     id="password"
-                    name="password"
+                    {...register("password")}
                     type="password"
                     required
                     autoComplete="current-password"
                     className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                   />
+                  {errors.password && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.password.message}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -278,9 +343,10 @@ export default function LoginComponent() {
               <div>
                 <button
                   type="submit"
-                  className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                  disabled={isSubmitting}
+                  className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Sign in
+                  {isSubmitting ? "Giriş yapılıyor..." : "Giriş Yap"}
                 </button>
               </div>
             </form>
@@ -349,12 +415,12 @@ export default function LoginComponent() {
 
           <p className="mt-10 text-center text-sm/6 text-gray-500">
             Not a member?{" "}
-            <a
-              href="#"
+            <Link
+              href="/register"
               className="font-semibold text-indigo-600 hover:text-indigo-500"
             >
-              Start a 14 day free trial
-            </a>
+              Register to Actxion!
+            </Link>
           </p>
         </div>
       </div>

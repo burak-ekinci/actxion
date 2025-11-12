@@ -9,6 +9,7 @@ import { useWeb3Store } from "@/store/web3Store";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 import { ToastContainer } from "react-toastify";
+import { SessionProvider } from "next-auth/react";
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
@@ -45,12 +46,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={` `}>
-        <WagmiProvider config={wagmiConfig}>
-          <QueryClientProvider client={queryClient}>
-            <ToastContainer theme="colored" />
-            <Web3Providers>{children}</Web3Providers>
-          </QueryClientProvider>
-        </WagmiProvider>
+        <SessionProvider>
+          <WagmiProvider config={wagmiConfig}>
+            <QueryClientProvider client={queryClient}>
+              <ToastContainer theme="colored" />
+              <Web3Providers>{children}</Web3Providers>
+            </QueryClientProvider>
+          </WagmiProvider>
+        </SessionProvider>
       </body>
     </html>
   );

@@ -72,22 +72,10 @@ const getNavigation = () => {
       current: false,
     },
     {
-      name: "Profile",
-      href: "/profile",
-      icon: User,
+      name: "ACTXION Wallet",
+      href: "/myaccount",
+      icon: Wallet,
       current: false,
-      children: [
-        {
-          name: "Profile",
-          href: "/profile",
-          icon: Bolt,
-        },
-        {
-          name: "My Account",
-          href: "/myaccount",
-          icon: Wallet,
-        },
-      ],
     },
     {
       name: "Advertiser",
