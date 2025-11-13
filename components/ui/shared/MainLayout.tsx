@@ -51,7 +51,7 @@ import Spinner from "./SpinnerLittle";
 import { useAccount } from "wagmi";
 import { useWeb3Store } from "@/store/web3Store";
 import { useRouter } from "next/navigation";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 const getNavigation = () => {
   const baseNav = [
@@ -153,6 +153,7 @@ export default function AppSidebarLayout({
   const { address } = useAccount();
   const { actions } = useWeb3Store();
   const router = useRouter();
+  const { data: session } = useSession();
   // Hydration hatasını önlemek için
   useEffect(() => {
     setMounted(true);
@@ -609,7 +610,9 @@ export default function AppSidebarLayout({
                           aria-hidden="true"
                           className="ml-4 text-sm/6 font-semibold text-gray-900"
                         >
-                          {address?.slice(0, 6) + "..." + address?.slice(-6)}
+                          {address
+                            ? address.slice(0, 6) + "..." + address.slice(-6)
+                            : session?.user?.email || "User"}
                         </span>
                         <ChevronDownIcon
                           aria-hidden="true"

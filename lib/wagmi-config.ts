@@ -12,11 +12,6 @@ export const wagmiConfig = createConfig({
     [mainnet.id]: http(),
     [sepolia.id]: http(),
   },
-
-  // Porto'yu devre dışı bırak
-  experimental: {
-    disablePorto: true,
-  },
 });
 
 export const chains = [mainnet, sepolia];
