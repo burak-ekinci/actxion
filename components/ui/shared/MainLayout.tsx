@@ -50,6 +50,8 @@ import Link from "next/link";
 import Spinner from "./SpinnerLittle";
 import { useAccount } from "wagmi";
 import { useWeb3Store } from "@/store/web3Store";
+import { useRouter } from "next/navigation";
+import { signOut } from "next-auth/react";
 
 const getNavigation = () => {
   const baseNav = [
@@ -129,7 +131,7 @@ const getNavigation = () => {
 };
 
 const getUserNavigation = () => [
-  { name: "Profile", href: "#" },
+  { name: "Profile", href: "/profile" },
   { name: "Sign Out", href: "/login" },
 ];
 
@@ -150,6 +152,7 @@ export default function AppSidebarLayout({
   const [openMenus, setOpenMenus] = useState<{ [key: string]: boolean }>({});
   const { address } = useAccount();
   const { actions } = useWeb3Store();
+  const router = useRouter();
   // Hydration hatasını önlemek için
   useEffect(() => {
     setMounted(true);
@@ -625,7 +628,9 @@ export default function AppSidebarLayout({
                             item.name === "Sign Out" ? (
                               <button
                                 type="button"
-                                onClick={() => actions.disconnect()}
+                                onClick={() => {
+                                  signOut({ callbackUrl: "/login" });
+                                }}
                                 className={`block w-full px-3 py-1 text-left text-sm/6 ${
                                   active
                                     ? "bg-gray-50 text-indigo-600"

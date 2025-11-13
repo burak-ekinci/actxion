@@ -1,21 +1,25 @@
-import { Schema, model, Document } from "mongoose";
+import { Schema, model, Document, models } from "mongoose";
 
 interface IUser extends Document {
-  address: string;
+  walletAddress?: string;
   email: string;
   password: string;
-  nonce: string;
-  signature: string;
+  nonce?: string;
+  signature?: string;
 }
-const User = new Schema<IUser>(
+
+const UserSchema = new Schema<IUser>(
   {
-    address: { type: String, unique: true },
-    email: { type: String, unique: true },
-    password: { type: String },
+    walletAddress: { type: String, unique: true }, // Optional, unique ama null değerlere izin ver
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
     nonce: { type: String },
     signature: { type: String },
   },
   { timestamps: true }
 );
 
-export default model<IUser>("User", User);
+// Model zaten compile edilmişse mevcut olanı kullan, yoksa yeni oluştur
+const User = models.User || model<IUser>("User", UserSchema);
+
+export default User;

@@ -30,6 +30,15 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/discover", request.url));
   }
 
+  // Kök rotada (/) login kontrolü - giriş yapmışsa discover'a, yapmamışsa login'e yönlendir
+  if (pathname === "/") {
+    if (token) {
+      return NextResponse.redirect(new URL("/discover", request.url));
+    } else {
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
+  }
+
   return NextResponse.next();
 }
 

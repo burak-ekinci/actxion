@@ -2,11 +2,15 @@ import NextAuth from "next-auth";
 
 import GoogleProvider from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
+import { verifyMessage } from "viem";
+import fs from "fs";
 
-export const { handlers, signIn, signOut } = NextAuth({
+export const authOptions = {
   providers: [
     GoogleProvider,
     Credentials({
+      id: "credentials",
+      name: "credentials",
       credentials: {
         email: {
           label: "Email",
@@ -62,6 +66,74 @@ export const { handlers, signIn, signOut } = NextAuth({
         }
       },
     }),
+    Credentials({
+      id: "wallet",
+      name: "wallet",
+      credentials: {
+        walletAddress: {
+          label: "Wallet Address",
+          type: "text",
+        },
+        signature: {
+          label: "Signature",
+          type: "text",
+        },
+      },
+      authorize: async (credentials) => {
+        const { walletAddress, signature } = credentials as {
+          walletAddress: string;
+          signature: string;
+        };
+
+        try {
+          const { dbConnect } = await import("@/lib/mongoose");
+          const User = (await import("@/models/User")).default;
+
+          await dbConnect();
+
+          // Wallet adresi ile kullanıcıyı bul
+          const user = await User.findOne({ walletAddress });
+
+          if (!user) {
+            console.log("Wallet adresi ile kullanıcı bulunamadı:", walletAddress);
+            return null;
+          }
+
+          // İmza doğrulama
+          const messageDB = fs.readFileSync("message.json", "utf8");
+          const messageDBData = JSON.parse(messageDB);
+          const message: string = messageDBData[walletAddress];
+
+          if (!message) {
+            console.log("İmza için mesaj bulunamadı:", walletAddress);
+            return null;
+          }
+
+          const isSignatureValid = await verifyMessage({
+            address: walletAddress as `0x${string}`,
+            signature: signature as `0x${string}`,
+            message,
+          });
+
+          if (!isSignatureValid) {
+            console.log("Geçersiz imza:", walletAddress);
+            return null;
+          }
+
+          console.log("WALLET İLE BAŞARIYLA GİRİŞ YAPILDI:", user.email);
+
+          // NextAuth için gerekli format
+          return {
+            id: (user._id as any).toString(),
+            email: user.email,
+            name: user.email.split("@")[0],
+          };
+        } catch (error) {
+          console.error("Wallet auth hatası:", error);
+          return null;
+        }
+      },
+    }),
   ],
   session: {
     strategy: "jwt",
@@ -90,4 +162,6 @@ export const { handlers, signIn, signOut } = NextAuth({
       return baseUrl;
     },
   },
-});
+} as const;
+
+export const { handlers, signIn, signOut, auth } = NextAuth(authOptions);

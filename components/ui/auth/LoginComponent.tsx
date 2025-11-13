@@ -178,11 +178,29 @@ export default function LoginComponent() {
         status: "success",
         message: "Sign in success",
       });
+
+      // NextAuth ile wallet girişi yap
+      const result = await signIn("wallet", {
+        walletAddress: currentAddress,
+        signature,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        console.error("Wallet auth error:", result.error);
+        setAuthStatus({
+          status: "error",
+          message: "Wallet giriş hatası: " + result.error,
+        });
+        setIsAuthenticating(false);
+        return;
+      }
+
       store.actions.updateWalletState({
         isSignedIn: true,
       });
       setShowWalletSignPopup(false); // Popup'u kapat
-      return router.push("/dashboard");
+      return router.push("/discover");
       // İmzalama başarılı olduğunda, doğrulama için gereken tüm değerleri döndür
     } catch (error) {
       console.error("İmzalama hatası:", error);
